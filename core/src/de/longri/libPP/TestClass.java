@@ -19,8 +19,10 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.async.AsyncExecutor;
 import com.badlogic.gdx.utils.async.AsyncTask;
 
@@ -40,6 +42,29 @@ public class TestClass extends ApplicationAdapter {
     public void create() {
         batch = new SpriteBatch();
         img = new Texture("badlogic.jpg");
+
+
+        postAsync(new Runnable() {
+            @Override
+            public void run() {
+
+                PixmapPacker pixmapPacker = new PixmapPacker();
+
+                Pixmap pixmap = new Pixmap(2, 2, Pixmap.Format.RGBA8888);
+                pixmap.setColor(Color.WHITE);
+                pixmap.fill();
+                pixmapPacker.pack("color_white", pixmap);
+
+                pixmap = new Pixmap(2, 2, Pixmap.Format.RGBA8888);
+                pixmap.setColor(Color.CYAN);
+                pixmap.fill();
+                pixmapPacker.pack("color_cyan", pixmap);
+
+                TextureAtlas atlas = pixmapPacker.generateTextureAtlas(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest, true);
+
+            }
+        });
+
     }
 
 
