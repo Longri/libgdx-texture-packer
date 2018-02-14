@@ -1,0 +1,5 @@
+<config>	
+	<libs>
+		<lib>libs/libPP.a</lib>
+	</libs>
+</config>
