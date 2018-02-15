@@ -293,7 +293,8 @@ public class LibPPBuild {
 
     private static void runTest() {
 
-        int randomTestRecCount = 10;
+        int randomTestRecCount = 20;
+        int maxTexSize=600;
 
 
         //delete alt test folder
@@ -316,10 +317,26 @@ public class LibPPBuild {
             index += 7;
         }
 
-        int[] result = NativePacker.packNative(valueArray, valueArray.length / 7, 1024, false, false);
+        int[] result = NativePacker.packNative(valueArray, valueArray.length / 7,
+                maxTexSize, false, true);
 
-        for (int i = 0; i < result.length; i++) {
-            System.out.println("Page size[" + i + "]: " + result[i]);
+
+        //wait for c++ printf
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("#################################################################");
+
+        int idx = 1;
+        for (int i = 0; i < result[0]; i++) {
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Page[").append(i).append("] w=").append(result[idx++]).append(" h=").append(result[idx++]);
+
+            System.out.println(stringBuilder.toString());
             index = 0;
             for (int j = 0; j < randomTestRecCount; j++) {
                 if (valueArray[index + 6] == i) {

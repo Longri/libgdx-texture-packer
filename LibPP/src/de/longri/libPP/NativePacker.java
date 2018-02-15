@@ -50,14 +50,16 @@ public class NativePacker {
             printf("bins: %d\n", bins.size());
         }
 
-        int *ret = new int[bins.size()];
-
+        int *ret = new int[(bins.size()*2)+1];
+        ret[0] = bins.size();
+        int idx=1;
         for (int i = 0; i < bins.size(); ++i) {
             if (debug) {
                 printf("\n\nbin: %dx%d, rects: %d\n", bins[i].size.w, bins[i].size.h, bins[i].rects.size());
             }
 
-            ret[i] = bins[i].size.w;
+            ret[idx++] = bins[i].size.w;
+            ret[idx++] = bins[i].size.h;
 
             for (int r = 0; r < bins[i].rects.size(); ++r) {
                 rect_xywhf *rect = bins[i].rects[r];
@@ -115,12 +117,10 @@ public class NativePacker {
 
     public static native int[] packNative(short[] valueArray, int count, int maxTextureSize, boolean allowFlip, boolean writeDebug); /*
 
-    packRecArray(valueArray,count, maxTextureSize, allowFlip, writeDebug);
-
-
+    int *ret = packRecArray(valueArray, count, maxTextureSize, allowFlip, writeDebug);
 
     jintArray result;
-    int size =3;
+    int size = (ret[0]*2)+1;
     result = (env)->NewIntArray( size);
     if (result == NULL) {
         return NULL;
@@ -129,7 +129,7 @@ public class NativePacker {
     // fill a temp structure to use to populate the java int array
     jint fill[size];
         for (i = 0; i < size; i++) {
-        fill[i] = i; // put whatever logic you want to populate the values here.
+        fill[i] = ret[i]; // put whatever logic you want to populate the values here.
         }
         // move from the temp structure to the java structure
         (env)->SetIntArrayRegion(result, 0, size, fill);
