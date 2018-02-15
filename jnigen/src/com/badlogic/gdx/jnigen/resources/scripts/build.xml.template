@@ -2,28 +2,28 @@
 
 	
 	<target name="pack-natives">
-		<jar destfile="../libs/GdxSqlite-platform-%version%-natives-desktop.jar">
-        			<fileset dir="../libs/macosx64" erroronmissingdir="false" includes="libGdxSqlite64.dylib"/>
-        			<fileset dir="../libs/macosx32" erroronmissingdir="false" includes="libGdxSqlite.dylib"/>
-        			<fileset dir="../libs/linux32" erroronmissingdir="false" includes="libGdxSqlite.so"/>
-        			<fileset dir="../libs/linux64" erroronmissingdir="false" includes="libGdxSqlite64.so"/>
-        			<fileset dir="../libs/windows64" erroronmissingdir="false" includes="GdxSqlite64.dll"/>
-                    <fileset dir="../libs/windows" erroronmissingdir="false" includes="GdxSqlite.dll"/>
+		<jar destfile="../libs/LibPP-platform-%version%-natives-desktop.jar">
+        			<fileset dir="../libs/macosx64" erroronmissingdir="false" includes="libLibPP64.dylib"/>
+        			<fileset dir="../libs/macosx32" erroronmissingdir="false" includes="libLibPP.dylib"/>
+        			<fileset dir="../libs/linux32" erroronmissingdir="false" includes="libLibPP.so"/>
+        			<fileset dir="../libs/linux64" erroronmissingdir="false" includes="libLibPP64.so"/>
+        			<fileset dir="../libs/windows64" erroronmissingdir="false" includes="LibPP64.dll"/>
+                    <fileset dir="../libs/windows" erroronmissingdir="false" includes="LibPP.dll"/>
         </jar>
-        <jar destfile="../libs/GdxSqlite-platform-1.0-natives-arm64-v8a.jar">
-        	<fileset dir="../libs/arm64-v8a" erroronmissingdir="false" includes="libGdxSqlite.so"/>
+        <jar destfile="../libs/LibPP-platform-1.0-natives-arm64-v8a.jar">
+        	<fileset dir="../libs/arm64-v8a" erroronmissingdir="false" includes="libLibPP.so"/>
         </jar>
-        <jar destfile="../libs/GdxSqlite-platform-1.0-natives-armeabi-v7a.jar">
-        	<fileset dir="../libs/armeabi-v7a" erroronmissingdir="false" includes="libGdxSqlite.so"/>
+        <jar destfile="../libs/LibPP-platform-1.0-natives-armeabi-v7a.jar">
+        	<fileset dir="../libs/armeabi-v7a" erroronmissingdir="false" includes="libLibPP.so"/>
         </jar>
-        <jar destfile="../libs/GdxSqlite-platform-1.0-natives-x86_64.jar">
-        	<fileset dir="../libs/x86_64" erroronmissingdir="false" includes="libGdxSqlite.so"/>
+        <jar destfile="../libs/LibPP-platform-1.0-natives-x86_64.jar">
+        	<fileset dir="../libs/x86_64" erroronmissingdir="false" includes="libLibPP.so"/>
         </jar>
-        <jar destfile="../libs/GdxSqlite-platform-1.0-natives-armeabi.jar">
-        	<fileset dir="../libs/armeabi" erroronmissingdir="false" includes="libGdxSqlite.so"/>
+        <jar destfile="../libs/LibPP-platform-1.0-natives-armeabi.jar">
+        	<fileset dir="../libs/armeabi" erroronmissingdir="false" includes="libLibPP.so"/>
         </jar>
-        <jar destfile="../libs/GdxSqlite-platform-1.0-natives-x86.jar">
-        	<fileset dir="../libs/x86" erroronmissingdir="false" includes="libGdxSqlite.so"/>
+        <jar destfile="../libs/LibPP-platform-1.0-natives-x86.jar">
+        	<fileset dir="../libs/x86" erroronmissingdir="false" includes="libLibPP.so"/>
         </jar>
 	</target>
 

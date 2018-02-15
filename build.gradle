@@ -101,7 +101,7 @@ project(":ios") {
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
 
         //include libs
-        compile fileTree(dir: '../GdxSqliteBuild/libs', include: ['*.jar'])
+        compile fileTree(dir: '../LibPPBuild/libs', include: ['*.jar'])
     }
 }
 

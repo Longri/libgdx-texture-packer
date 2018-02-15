@@ -31,4 +31,4 @@ global: GRADLE_OPTS="-Xmx2048m"
 before_install: chmod +x gradlew
 before_script: chmod +x gradlew
 script:
-   ./gradlew GdxSqlite:build --stacktrace
+   ./gradlew LibPP:build --stacktrace

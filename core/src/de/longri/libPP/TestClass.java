@@ -48,7 +48,7 @@ public class TestClass extends ApplicationAdapter {
             @Override
             public void run() {
 
-                PixmapPacker pixmapPacker = new PixmapPacker();
+                PixmapPacker pixmapPacker = new PixmapPacker(true);
 
                 Pixmap pixmap = new Pixmap(2, 2, Pixmap.Format.RGBA8888);
                 pixmap.setColor(Color.WHITE);

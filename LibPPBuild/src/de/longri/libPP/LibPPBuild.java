@@ -17,6 +17,7 @@ package de.longri.libPP;
 
 
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.jnigen.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.StringBuilder;
@@ -80,10 +81,10 @@ public class LibPPBuild {
 
         if (all || cmd.hasOption("win64")) {
             BuildTarget win64 = BuildTarget.newDefaultTarget(BuildTarget.TargetOs.Windows, true);
-//            win64.compilerSuffix = ".exe";
-            win64.headerDirs = headers;
+            win64.compilerSuffix = ".exe";
+//            win64.headerDirs = headers;
             win64.cFlags += cFlags;
-//            win64.cppFlags += " -fpermissive";
+            win64.cppFlags += " -std=c++11";
             targets.add(win64);
         }
 
@@ -161,12 +162,11 @@ public class LibPPBuild {
         }
 
 
-        BuildConfig config = new BuildConfig("GdxSqlite");
+        BuildConfig config = new BuildConfig("LibPP");
         new AntScriptGenerator().generate(config, targets);
 
         FileDescriptor projectPath = new FileDescriptor("../");
-        FileDescriptor buildLibsPath = projectPath.child("GdxSqliteBuild/libs");
-
+        FileDescriptor buildLibsPath = projectPath.child("LibPPBuild/libs");
 
 
         //delete outdated files
@@ -201,15 +201,15 @@ public class LibPPBuild {
         //copy libs to local modules
 
 
-        FileDescriptor java = projectPath.child("GdxSqlite/build/libs/GdxSqlite-1.0.jar");
+        FileDescriptor java = projectPath.child("LibPP/build/libs/LibPP-1.0.jar");
 
         FileDescriptor core = projectPath.child("core");
-        FileDescriptor coreJar = projectPath.child("GdxSqlite/build/libs");
+        FileDescriptor coreJar = projectPath.child("LibPP/build/libs");
         coreJar.copyTo(core);
 
         FileDescriptor desktop = projectPath.child("desktop/libs/");
-        FileDescriptor test = projectPath.child("GdxSqlite/testNatives/");
-        FileDescriptor desktopNative = projectPath.child("GdxSqliteBuild/libs/GdxSqlite-platform-1.0-natives-desktop.jar");
+        FileDescriptor test = projectPath.child("LibPP/testNatives/");
+        FileDescriptor desktopNative = projectPath.child("LibPPBuild/libs/LibPP-platform-1.0-natives-desktop.jar");
 
 
         desktop.mkdirs();
@@ -217,21 +217,21 @@ public class LibPPBuild {
         desktopNative.copyTo(desktop);
         desktopNative.copyTo(test);
 
-        FileDescriptor androidNative_arm64 = projectPath.child("GdxSqliteBuild/libs/arm64-v8a/libGdxSqlite.so");
-        FileDescriptor androidNative_arm = projectPath.child("GdxSqliteBuild/libs/armeabi/libGdxSqlite.so");
-        FileDescriptor androidNative_armv7 = projectPath.child("GdxSqliteBuild/libs/armeabi-v7a/libGdxSqlite.so");
-        FileDescriptor androidNative_x86 = projectPath.child("GdxSqliteBuild/libs/x86/libGdxSqlite.so");
-        FileDescriptor androidNative_x86_64 = projectPath.child("GdxSqliteBuild/libs/x86_64/libGdxSqlite.so");
+        FileDescriptor androidNative_arm64 = projectPath.child("LibPPBuild/libs/arm64-v8a/libLibPP.so");
+        FileDescriptor androidNative_arm = projectPath.child("LibPPBuild/libs/armeabi/libLibPP.so");
+        FileDescriptor androidNative_armv7 = projectPath.child("LibPPBuild/libs/armeabi-v7a/libLibPP.so");
+        FileDescriptor androidNative_x86 = projectPath.child("LibPPBuild/libs/x86/libLibPP.so");
+        FileDescriptor androidNative_x86_64 = projectPath.child("LibPPBuild/libs/x86_64/libLibPP.so");
 
         FileDescriptor androidLibs = projectPath.child("android/libs/");
 
         try {
             androidLibs.mkdirs();
-            androidNative_arm64.copyTo(androidLibs.child("arm64-v8a/libGdxSqlite.so"));
-            androidNative_arm.copyTo(androidLibs.child("armeabi/libGdxSqlite.so"));
-            androidNative_armv7.copyTo(androidLibs.child("armeabi-v7a/libGdxSqlite.so"));
-            androidNative_x86.copyTo(androidLibs.child("x86/libGdxSqlite.so"));
-            androidNative_x86_64.copyTo(androidLibs.child("x86_64/libGdxSqlite.so"));
+            androidNative_arm64.copyTo(androidLibs.child("arm64-v8a/libLibPP.so"));
+            androidNative_arm.copyTo(androidLibs.child("armeabi/libLibPP.so"));
+            androidNative_armv7.copyTo(androidLibs.child("armeabi-v7a/libLibPP.so"));
+            androidNative_x86.copyTo(androidLibs.child("x86/libLibPP.so"));
+            androidNative_x86_64.copyTo(androidLibs.child("x86_64/libLibPP.so"));
             java.copyTo(androidLibs.child(java.name()));
         } catch (Exception e) {
 
@@ -242,7 +242,7 @@ public class LibPPBuild {
         try {
             FileDescriptor iOSLibs = projectPath.child("ios/libs/");
 
-            FileDescriptor iOSNative = projectPath.child("GdxSqliteBuild/libs/ios32/libGdxSqlite.a");
+            FileDescriptor iOSNative = projectPath.child("LibPPBuild/libs/ios32/libLibPP.a");
             iOSLibs.mkdirs();
             java.copyTo(iOSLibs.child(java.name()));
             iOSNative.copyTo(iOSLibs.child(iOSNative.name()));
@@ -253,8 +253,8 @@ public class LibPPBuild {
     }
 
     private static void syncPrecopmiledLibs() {
-        FileDescriptor libsPath = new FileDescriptor("../GdxSqliteBuild/libs/");
-        FileDescriptor precompiledLibsPath = new FileDescriptor("../GdxSqliteBuild/precompiledLibs/");
+        FileDescriptor libsPath = new FileDescriptor("../LibPPBuild/libs/");
+        FileDescriptor precompiledLibsPath = new FileDescriptor("../LibPPBuild/precompiledLibs/");
         sync(libsPath, precompiledLibsPath, "windows64");
         sync(libsPath, precompiledLibsPath, "armeabi");
         sync(libsPath, precompiledLibsPath, "armeabi-v7a");
@@ -295,6 +295,13 @@ public class LibPPBuild {
         //delete alt test folder
         FileHandle clear = new FileHandle("test");
         clear.deleteDirectory();
+        new JniGenSharedLibraryLoader("libs/LibPP-platform-1.0-natives-desktop.jar").load("LibPP");
+        short[] valueArray = new short[10];
+        int[] result = NativePacker.packNative(valueArray, 0, false, false);
+
+        for (int i = 0; i < result.length; i++) {
+            System.out.println("Page size[" + i + "]: " + result[i]);
+        }
 
     }
 
