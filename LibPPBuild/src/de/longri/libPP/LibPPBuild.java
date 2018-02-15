@@ -316,7 +316,7 @@ public class LibPPBuild {
             index += 7;
         }
 
-        int[] result = NativePacker.packNative(valueArray, 1024, false, false);
+        int[] result = NativePacker.packNative(valueArray, valueArray.length / 7, 1024, false, false);
 
         for (int i = 0; i < result.length; i++) {
             System.out.println("Page size[" + i + "]: " + result[i]);
@@ -325,12 +325,12 @@ public class LibPPBuild {
                 if (valueArray[index + 6] == i) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("    ");
-                    sb.append("rec index:").append(valueArray[index + 0]);
-                    sb.append(" x: ").append(valueArray[index + 1]);
-                    sb.append(" y: ").append(valueArray[index + 2]);
-                    sb.append(" width: ").append(valueArray[index + 3]);
-                    sb.append(" height: ").append(valueArray[index + 4]);
-                    sb.append(" flipped: ").append((valueArray[index + 5] > 0));
+                    sb.append("rec index=").append(valueArray[index + 0]);
+                    sb.append(" x=").append(valueArray[index + 1]);
+                    sb.append(" y=").append(valueArray[index + 2]);
+                    sb.append(" width=").append(valueArray[index + 3]);
+                    sb.append(" height=").append(valueArray[index + 4]);
+                    sb.append(" flipped=").append((valueArray[index + 5] > 0));
                     System.out.println(sb.toString());
                 }
                 index += 7;

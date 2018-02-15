@@ -61,7 +61,7 @@ public class PixmapPacker {
         boolean writeDebug = false;
         int maxtextureSize = 1024;
 
-        int[] pages = NativePacker.packNative(valueArray, maxtextureSize, allowFlip, writeDebug);
+        int[] pages = NativePacker.packNative(valueArray, valueArray.length / 7, maxtextureSize, allowFlip, writeDebug);
         Pixmap[] pixmaps = new Pixmap[pages.length];
 
         for (int i = 0; i < pages.length; i++) {

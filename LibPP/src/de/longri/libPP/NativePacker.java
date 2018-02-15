@@ -27,7 +27,7 @@ public class NativePacker {
     #include <cstring>
     #include <algorithm>
 
-    void packRecArray(short *valueArray, int count, int maxTexSize, bool allowFlipp, bool debug) {
+    int* packRecArray(short *valueArray, int count, int maxTexSize, bool allowFlipp, bool debug) {
 
 
     rect_xywhf rects[count], *ptr_rects[count];
@@ -50,10 +50,14 @@ public class NativePacker {
             printf("bins: %d\n", bins.size());
         }
 
+        int *ret = new int[bins.size()];
+
         for (int i = 0; i < bins.size(); ++i) {
             if (debug) {
                 printf("\n\nbin: %dx%d, rects: %d\n", bins[i].size.w, bins[i].size.h, bins[i].rects.size());
             }
+
+            ret[i] = bins[i].size.w;
 
             for (int r = 0; r < bins[i].rects.size(); ++r) {
                 rect_xywhf *rect = bins[i].rects[r];
@@ -73,6 +77,7 @@ public class NativePacker {
                 }
             }
         }
+        return ret;
 
         if (debug) {
             printf("\n Array result:\n");
@@ -96,6 +101,9 @@ public class NativePacker {
     } else {
         printf("failed: there's a rectangle with width/height bigger than max_size!\n");
     }
+    int *ret = new int[1];
+    ret[0]=0;
+    return ret;
 }
 
 
@@ -105,8 +113,12 @@ public class NativePacker {
      */
 
 
+    public static native int[] packNative(short[] valueArray, int count, int maxTextureSize, boolean allowFlip, boolean writeDebug); /*
 
-    public static native int[] packNative(short[] valueArray, int maxTextureSize, boolean allowFlip, boolean writeDebug); /*
+    packRecArray(valueArray,count, maxTextureSize, allowFlip, writeDebug);
+
+
+
     jintArray result;
     int size =3;
     result = (env)->NewIntArray( size);
