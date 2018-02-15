@@ -17,8 +17,8 @@ package de.longri.libPP;
 
 
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.jnigen.*;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.StringBuilder;
 import org.apache.commons.cli.*;
@@ -292,15 +292,49 @@ public class LibPPBuild {
     }
 
     private static void runTest() {
+
+        int randomTestRecCount = 10;
+
+
         //delete alt test folder
         FileHandle clear = new FileHandle("test");
         clear.deleteDirectory();
         new JniGenSharedLibraryLoader("libs/LibPP-platform-1.0-natives-desktop.jar").load("LibPP");
-        short[] valueArray = new short[10];
-        int[] result = NativePacker.packNative(valueArray, 0, false, false);
+        short[] valueArray = new short[randomTestRecCount * 7];
+
+
+        // fill random test array
+        int index = 0;
+        for (int i = 0; i < randomTestRecCount; i++) {
+            valueArray[index + 0] = (short) i; // index
+            valueArray[index + 1] = 0; // x
+            valueArray[index + 2] = 0; // y
+            valueArray[index + 3] = (short) MathUtils.random(100, 300);// width
+            valueArray[index + 4] = (short) MathUtils.random(100, 300); // height
+            valueArray[index + 5] = 0;// flipped
+            valueArray[index + 6] = 0;
+            index += 7;
+        }
+
+        int[] result = NativePacker.packNative(valueArray, 1024, false, false);
 
         for (int i = 0; i < result.length; i++) {
             System.out.println("Page size[" + i + "]: " + result[i]);
+            index = 0;
+            for (int j = 0; j < randomTestRecCount; j++) {
+                if (valueArray[index + 6] == i) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("    ");
+                    sb.append("rec index:").append(valueArray[index + 0]);
+                    sb.append(" x: ").append(valueArray[index + 1]);
+                    sb.append(" y: ").append(valueArray[index + 2]);
+                    sb.append(" width: ").append(valueArray[index + 3]);
+                    sb.append(" height: ").append(valueArray[index + 4]);
+                    sb.append(" flipped: ").append((valueArray[index + 5] > 0));
+                    System.out.println(sb.toString());
+                }
+                index += 7;
+            }
         }
 
     }
