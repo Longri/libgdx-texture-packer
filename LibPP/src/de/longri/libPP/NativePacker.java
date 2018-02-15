@@ -43,7 +43,7 @@ public class NativePacker {
         index += 7;
     }
 
-    vector<bin> bins;
+    std::vector<bin> bins;
 
     if (pack(ptr_rects, count, maxTexSize, allowFlipp, bins)) {
         if (debug) {
