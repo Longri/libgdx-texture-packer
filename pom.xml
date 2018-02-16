@@ -9,12 +9,12 @@
     <packaging>pom</packaging>
     <name>libPP</name>
 
-    <version>0.5.5-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <!--set global version with command line:
     versions:set -DnewVersion=2.0-RELEASE-->
 
 
-    <description>SQLite wrapper for LibGdx.</description>
+    <description>Pixmap packer for LibGdx.</description>
     <url>https://github.com/Longri/libgdx-texture-packer</url>
     <issueManagement>
         <url>https://github.com/Longri/libgdx-texture-packer/issues</url>
