@@ -30,14 +30,16 @@ public class PixmapPacker {
     private final static boolean WRITE_DEBUG = false;
 
     private final boolean FORCE_POT;
-    private final int MAX_TEXTURE_SIZE;
+    private final int MAX_TEXTURE_SIZE, PADDING, PADDING2X;
     private final Array<objStruct> list = new Array<>();
 
     private int count;
 
-    public PixmapPacker(boolean force_pot, int maxTextureSize) {
+    public PixmapPacker(boolean force_pot, int maxTextureSize, int padding) {
         FORCE_POT = force_pot;
-        this.MAX_TEXTURE_SIZE = maxTextureSize;
+        MAX_TEXTURE_SIZE = maxTextureSize;
+        PADDING = padding;
+        PADDING2X = PADDING * 2;
     }
 
     public void pack(String name, Pixmap pixmap) {
@@ -56,13 +58,12 @@ public class PixmapPacker {
             valueArray[index + 0] = (short) obj.index; // index
             valueArray[index + 1] = 0; // x
             valueArray[index + 2] = 0; // y
-            valueArray[index + 3] = (short) obj.pixmap.getWidth(); // width
-            valueArray[index + 4] = (short) obj.pixmap.getHeight(); // height
+            valueArray[index + 3] = (short) (obj.pixmap.getWidth() + PADDING2X); // width
+            valueArray[index + 4] = (short) (obj.pixmap.getHeight() + PADDING2X); // height
             valueArray[index + 5] = 0; // flipped
             valueArray[index + 6] = 0; // texture index
             index += 7;
         }
-
 
 
         int[] pages = NativePacker.packNative(valueArray, valueArray.length / 7, MAX_TEXTURE_SIZE, ALLOW_FLIP, WRITE_DEBUG);
@@ -74,7 +75,7 @@ public class PixmapPacker {
         int idx = 1;
         for (int i = 0; i < pageCount; i++) {
             int pageWidth = pages[idx++];
-            int pageHeight= pages[idx++];
+            int pageHeight = pages[idx++];
             if (FORCE_POT) {
                 pageWidth = MathUtils.nextPowerOfTwo(pageWidth);
                 pageHeight = MathUtils.nextPowerOfTwo(pageHeight);
@@ -87,12 +88,12 @@ public class PixmapPacker {
         for (int i = 0; i < recCount; i++) {
             objStruct obj = list.get(i);
 //            int textureIndex = valueArray[index + 0]; // index
-            obj.x = valueArray[index + 1]; // x
-            obj.y = valueArray[index + 2]; // y
+            obj.x = valueArray[index + 1] + PADDING; // x
+            obj.y = valueArray[index + 2] + PADDING; // y
 //            int width = valueArray[index + 3]; // width
 //            int height = valueArray[index + 4]; // height
 //            boolean flipped = valueArray[index + 5] > 0; // flipped
-            int pageIndex = valueArray[index + 6] = 0; // page index
+            int pageIndex = valueArray[index + 6]; // page index
             pixmaps[pageIndex].drawPixmap(obj.pixmap, obj.x, obj.y);
             obj.setTexturePageIndex(pageIndex);
             index += 7;
@@ -100,7 +101,8 @@ public class PixmapPacker {
 
         Texture[] textures = new Texture[pageCount];
         for (int i = 0; i < pageCount; i++) {
-            textures[i] = new Texture(pixmaps[i], Pixmap.Format.RGBA8888,useMipMaps);
+            textures[i] = new Texture(pixmaps[i], Pixmap.Format.RGBA8888, useMipMaps);
+            textures[i].setFilter(minFilter, magFilter);
         }
 
         TextureAtlas atlas = new TextureAtlas();

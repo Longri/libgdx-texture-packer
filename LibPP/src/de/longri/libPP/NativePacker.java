@@ -125,24 +125,11 @@ public class NativePacker {
     return ret;
 }
 
+JNIEXPORT jintArray JNICALL Java_de_longri_libPP_NativePacker_privatePackNative(JNIEnv* env, jclass clazz, jshortArray obj_valueArray, jint count, jint maxTextureSize, jboolean allowFlip, jboolean writeDebug) {
 
-
-
-
-     */
-
-    public static int[] packNative(short[] valueArray, int count, int maxTextureSize, boolean allowFlip, boolean writeDebug) {
-
-        if (!checkLib()) {
-            throw new RuntimeException("Native lib not Loaded");
-        }
-        return privatePackNative(valueArray, count, maxTextureSize, allowFlip, writeDebug);
-    }
-
-
-    private static native int[] privatePackNative(short[] valueArray, int count, int maxTextureSize, boolean allowFlip, boolean writeDebug); /*
-
-    int *ret = packRecArray(valueArray, count, maxTextureSize, allowFlip, writeDebug);
+	short* valueArray = (short*)env->GetPrimitiveArrayCritical(obj_valueArray, 0);
+	int *ret = packRecArray(valueArray, count, maxTextureSize, allowFlip, writeDebug);
+    env->ReleasePrimitiveArrayCritical(obj_valueArray, valueArray, 0);
 
     jintArray result;
     int size = (ret[0]*2)+1;
@@ -159,7 +146,22 @@ public class NativePacker {
         // move from the temp structure to the java structure
         (env)->SetIntArrayRegion(result, 0, size, fill);
         return result;
+}
 
-    */
+
+
+
+     */
+
+    public static int[] packNative(short[] valueArray, int count, int maxTextureSize, boolean allowFlip, boolean writeDebug) {
+
+        if (!checkLib()) {
+            throw new RuntimeException("Native lib not Loaded");
+        }
+        return privatePackNative(valueArray, count, maxTextureSize, allowFlip, writeDebug);
+    }
+
+
+    private static native int[] privatePackNative(short[] valueArray, int count, int maxTextureSize, boolean allowFlip, boolean writeDebug);
 
 }
