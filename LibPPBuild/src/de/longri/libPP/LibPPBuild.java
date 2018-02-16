@@ -294,13 +294,14 @@ public class LibPPBuild {
     private static void runTest() {
 
         int randomTestRecCount = 20;
-        int maxTexSize=600;
+        int maxTexSize = 600;
 
 
         //delete alt test folder
         FileHandle clear = new FileHandle("test");
         clear.deleteDirectory();
         new JniGenSharedLibraryLoader("libs/LibPP-platform-1.0-natives-desktop.jar").load("LibPP");
+        NativePacker.libLoaded = true;
         short[] valueArray = new short[randomTestRecCount * 7];
 
 

@@ -15,10 +15,27 @@
  */
 package de.longri.libPP;
 
+import com.badlogic.gdx.utils.SharedLibraryLoader;
+
 /**
  * Created by Longri on 15.02.2018.
  */
 public class NativePacker {
+
+    static boolean libLoaded = false;
+
+    static boolean checkLib() {
+        if (!libLoaded) {
+            try {
+                new SharedLibraryLoader().load("LibPP");
+                libLoaded = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return libLoaded;
+    }
+
 
     //@off
     /*JNI
@@ -114,8 +131,16 @@ public class NativePacker {
 
      */
 
+    public static int[] packNative(short[] valueArray, int count, int maxTextureSize, boolean allowFlip, boolean writeDebug) {
 
-    public static native int[] packNative(short[] valueArray, int count, int maxTextureSize, boolean allowFlip, boolean writeDebug); /*
+        if (!checkLib()) {
+            throw new RuntimeException("Native lib not Loaded");
+        }
+        return privatePackNative(valueArray, count, maxTextureSize, allowFlip, writeDebug);
+    }
+
+
+    private static native int[] privatePackNative(short[] valueArray, int count, int maxTextureSize, boolean allowFlip, boolean writeDebug); /*
 
     int *ret = packRecArray(valueArray, count, maxTextureSize, allowFlip, writeDebug);
 

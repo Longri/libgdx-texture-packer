@@ -32,6 +32,7 @@ import com.badlogic.gdx.utils.async.AsyncTask;
 public class TestClass extends ApplicationAdapter {
     SpriteBatch batch;
     Texture img;
+    TextureAtlas atlas;
 
     int state = -1;
     Color actBackColor = Color.BLUE;
@@ -48,7 +49,7 @@ public class TestClass extends ApplicationAdapter {
             @Override
             public void run() {
 
-                PixmapPacker pixmapPacker = new PixmapPacker(true);
+                PixmapPacker pixmapPacker = new PixmapPacker(true, 1024);
 
                 Pixmap pixmap = new Pixmap(2, 2, Pixmap.Format.RGBA8888);
                 pixmap.setColor(Color.WHITE);
@@ -60,7 +61,8 @@ public class TestClass extends ApplicationAdapter {
                 pixmap.fill();
                 pixmapPacker.pack("color_cyan", pixmap);
 
-                TextureAtlas atlas = pixmapPacker.generateTextureAtlas(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest, true);
+                atlas = pixmapPacker.generateTextureAtlas(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest, true);
+
 
             }
         });
@@ -84,7 +86,15 @@ public class TestClass extends ApplicationAdapter {
         Gdx.gl.glClearColor(actBackColor.r, actBackColor.g, actBackColor.b, actBackColor.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        batch.draw(img, 0, 0);
+
+
+        if (atlas != null) {
+            TextureAtlas.AtlasRegion region = atlas.findRegion("color_cyan");
+            batch.draw(region, 200, 200, 100, 100);
+        }else{
+            batch.draw(img, 0, 0);
+        }
+
         batch.end();
     }
 
