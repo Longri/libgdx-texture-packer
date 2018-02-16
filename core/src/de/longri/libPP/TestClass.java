@@ -70,7 +70,7 @@ public class TestClass extends ApplicationAdapter {
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
                     public void run() {
-                        PixmapPacker pixmapPacker = new PixmapPacker(true, 512,2);
+                        PixmapPacker pixmapPacker = new PixmapPacker(true, 1024,2);
 
                         for (int i = 0; i < assetPixmaps.size; i++) {
                             pixmapPacker.pack(assetNames.get(i), assetPixmaps.get(i));
