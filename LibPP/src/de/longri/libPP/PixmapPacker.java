@@ -98,8 +98,8 @@ public class PixmapPacker {
             index += 7;
         }
 
-        Texture[] textures = new Texture[pages.length];
-        for (int i = 0; i < pages.length; i++) {
+        Texture[] textures = new Texture[pageCount];
+        for (int i = 0; i < pageCount; i++) {
             textures[i] = new Texture(pixmaps[i], Pixmap.Format.RGBA8888,useMipMaps);
         }
 

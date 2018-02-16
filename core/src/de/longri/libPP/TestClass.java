@@ -17,12 +17,14 @@ package de.longri.libPP;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.async.AsyncExecutor;
 import com.badlogic.gdx.utils.async.AsyncTask;
 
@@ -33,6 +35,8 @@ public class TestClass extends ApplicationAdapter {
     SpriteBatch batch;
     Texture img;
     TextureAtlas atlas;
+    Array<TextureAtlas.AtlasRegion> regionArray;
+    Texture texture;
 
     int state = -1;
     Color actBackColor = Color.BLUE;
@@ -49,26 +53,42 @@ public class TestClass extends ApplicationAdapter {
             @Override
             public void run() {
 
-                PixmapPacker pixmapPacker = new PixmapPacker(true, 1024);
+                //Load asset images
+                final Array<Pixmap> assetPixmaps = new Array<>();
+                final Array<String> assetNames = new Array<>();
 
-                Pixmap pixmap = new Pixmap(2, 2, Pixmap.Format.RGBA8888);
-                pixmap.setColor(Color.WHITE);
-                pixmap.fill();
-                pixmapPacker.pack("color_white", pixmap);
-
-                pixmap = new Pixmap(2, 2, Pixmap.Format.RGBA8888);
-                pixmap.setColor(Color.CYAN);
-                pixmap.fill();
-                pixmapPacker.pack("color_cyan", pixmap);
-
-                atlas = pixmapPacker.generateTextureAtlas(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest, true);
+                FileHandle assetPath = Gdx.files.internal("test");
+                FileHandle files[] = assetPath.list("png");
+                for (FileHandle file : files) {
+                    Pixmap pix = new Pixmap(file);
+                    String name = file.nameWithoutExtension();
+                    assetPixmaps.add(pix);
+                    assetNames.add(name);
+                }
 
 
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        PixmapPacker pixmapPacker = new PixmapPacker(false, 2048);
+
+                        for (int i = 0; i < assetPixmaps.size; i++) {
+                            pixmapPacker.pack(assetNames.get(i), assetPixmaps.get(i));
+                        }
+                        atlas = pixmapPacker.generateTextureAtlas(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest, true);
+                        regionArray = atlas.getRegions();
+                        drawMax = regionArray.size;
+                        texture = atlas.getTextures().first();
+                    }
+                });
             }
         });
 
     }
 
+
+    int drawCount = 0;
+    int drawMax;
 
     @Override
     public void render() {
@@ -88,10 +108,15 @@ public class TestClass extends ApplicationAdapter {
         batch.begin();
 
 
-        if (atlas != null) {
-            TextureAtlas.AtlasRegion region = atlas.findRegion("color_cyan");
-            batch.draw(region, 200, 200, 100, 100);
-        }else{
+        if (regionArray != null) {
+            if (drawCount < drawMax) {
+                TextureAtlas.AtlasRegion region = regionArray.get(drawCount++);
+                batch.draw(region, 200, 200, region.getRegionWidth(), region.getRegionHeight());
+            } else {
+                float s = Math.min(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                batch.draw(texture, 0, 0, s, s);
+            }
+        } else {
             batch.draw(img, 0, 0);
         }
 
