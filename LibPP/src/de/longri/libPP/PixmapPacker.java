@@ -15,11 +15,20 @@
  */
 package de.longri.libPP;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.BufferUtils;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.IntBuffer;
 
 /**
  * Created by Longri on 14.02.2018.
@@ -32,6 +41,9 @@ public class PixmapPacker {
     private final boolean FORCE_POT;
     private final int MAX_TEXTURE_SIZE, PADDING, PADDING2X;
     private final Array<objStruct> list = new Array<>();
+    private Pixmap[] pages;
+    Texture.TextureFilter minFilter;
+    Texture.TextureFilter magFilter;
 
     private int count;
 
@@ -47,6 +59,9 @@ public class PixmapPacker {
     }
 
     public TextureAtlas generateTextureAtlas(Texture.TextureFilter minFilter, Texture.TextureFilter magFilter, boolean useMipMaps) {
+
+        this.minFilter = minFilter;
+        this.magFilter = magFilter;
 
         //create short array for call native
         int recCount = list.size;
@@ -71,7 +86,7 @@ public class PixmapPacker {
         int pageCount = pages[0];
 
 
-        Pixmap[] pixmaps = new Pixmap[pageCount];
+        this.pages = new Pixmap[pageCount];
         int idx = 1;
         for (int i = 0; i < pageCount; i++) {
             int pageWidth = pages[idx++];
@@ -80,7 +95,7 @@ public class PixmapPacker {
                 pageWidth = MathUtils.nextPowerOfTwo(pageWidth);
                 pageHeight = MathUtils.nextPowerOfTwo(pageHeight);
             }
-            pixmaps[i] = new Pixmap(pageWidth, pageHeight, Pixmap.Format.RGBA8888);
+            this.pages[i] = new Pixmap(pageWidth, pageHeight, Pixmap.Format.RGBA8888);
         }
 
         //draw textures to pixmap pages
@@ -94,14 +109,14 @@ public class PixmapPacker {
 //            int height = valueArray[index + 4]; // height
 //            boolean flipped = valueArray[index + 5] > 0; // flipped
             int pageIndex = valueArray[index + 6]; // page index
-            pixmaps[pageIndex].drawPixmap(obj.pixmap, obj.x, obj.y);
+            this.pages[pageIndex].drawPixmap(obj.pixmap, obj.x, obj.y);
             obj.setTexturePageIndex(pageIndex);
             index += 7;
         }
 
         Texture[] textures = new Texture[pageCount];
         for (int i = 0; i < pageCount; i++) {
-            textures[i] = new Texture(pixmaps[i], Pixmap.Format.RGBA8888, useMipMaps);
+            textures[i] = new Texture(this.pages[i], Pixmap.Format.RGBA8888, useMipMaps);
             textures[i].setFilter(minFilter, magFilter);
         }
 
@@ -112,6 +127,39 @@ public class PixmapPacker {
             atlas.addRegion(obj.name, textures[obj.texturePageIndex], obj.x, obj.y, obj.pixmap.getWidth(), obj.pixmap.getHeight());
         }
         return atlas;
+    }
+
+    public void save(FileHandle file) throws IOException {
+
+        if (pages == null) throw new RuntimeException("Atlas not created! Call create first");
+
+        Writer writer = file.writer(false);
+        int index = -1;
+        for (Pixmap page : pages) {
+            {
+                FileHandle pageFile = file.sibling(file.nameWithoutExtension() + "_" + (++index) + ".png");
+                PixmapIO.writePNG(pageFile, page);
+                writer.write("\n");
+                writer.write(pageFile.name() + "\n");
+                writer.write("size: " + page.getWidth() + "," + page.getHeight() + "\n");
+                writer.write("format: " + Pixmap.Format.RGBA8888.name() + "\n");
+                writer.write("filter: " + minFilter.name() + "," + magFilter.name() + "\n");
+                writer.write("repeat: none" + "\n");
+                for (int i = 0, n = list.size; i < n; i++) {
+                    objStruct obj = list.get(i);
+                    if (obj.texturePageIndex == index) {
+                        writer.write(obj.name + "\n");
+                        writer.write("rotate: false" + "\n");
+                        writer.write("xy: " + obj.x + "," + obj.y + "\n");
+                        writer.write("size: " + obj.pixmap.getWidth() + "," + obj.pixmap.getHeight() + "\n");
+                        writer.write("orig: " + obj.pixmap.getWidth() + "," + obj.pixmap.getHeight() + "\n");
+                        writer.write("offset: 0, 0" + "\n");
+                        writer.write("index: -1" + "\n");
+                    }
+                }
+            }
+        }
+        writer.close();
     }
 
     private static class objStruct {
@@ -130,5 +178,20 @@ public class PixmapPacker {
         public void setTexturePageIndex(int texturePageIndex) {
             this.texturePageIndex = texturePageIndex;
         }
+    }
+
+
+    static int maxTextureSize = -1;
+
+    public static int getDeviceMaxGlTextureSize() {
+        if (maxTextureSize > -1) {
+            return maxTextureSize;
+        }
+
+        IntBuffer max = BufferUtils.newIntBuffer(16);
+        Gdx.gl.glGetIntegerv(GL20.GL_MAX_TEXTURE_SIZE, max);
+
+        maxTextureSize = max.get(0);
+        return maxTextureSize;
     }
 }

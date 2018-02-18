@@ -28,6 +28,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.async.AsyncExecutor;
 import com.badlogic.gdx.utils.async.AsyncTask;
 
+import java.io.IOException;
+
 /**
  * Created by Longri on 18.12.2017.
  */
@@ -70,15 +72,24 @@ public class TestClass extends ApplicationAdapter {
                 Gdx.app.postRunnable(new Runnable() {
                     @Override
                     public void run() {
-                        PixmapPacker pixmapPacker = new PixmapPacker(true, 1024,2);
+                        PixmapPacker pixmapPacker = new PixmapPacker(true, PixmapPacker.getDeviceMaxGlTextureSize(), 2);
 
                         for (int i = 0; i < assetPixmaps.size; i++) {
                             pixmapPacker.pack(assetNames.get(i), assetPixmaps.get(i));
                         }
-                        atlas = pixmapPacker.generateTextureAtlas(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest, true);
-                        regionArray = atlas.getRegions();
-                        drawMax = regionArray.size;
-                        texture = atlas.getTextures().first();
+                        pixmapPacker.generateTextureAtlas(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest, true);
+
+                        //save atlas
+                        FileHandle saveFileHandle = Gdx.files.local("Atlas.atlas");
+                        try {
+                            pixmapPacker.save(saveFileHandle);
+                            atlas = new TextureAtlas(saveFileHandle);
+                            regionArray = atlas.getRegions();
+                            drawMax = regionArray.size;
+                            texture = atlas.getTextures().first();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
             }
